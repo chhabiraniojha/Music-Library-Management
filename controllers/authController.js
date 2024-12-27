@@ -37,7 +37,11 @@ exports.signup = async (req, res) => {
         const userRole = userCount === 0 ? "Admin" : role;
 
         if (userRole === 'Admin' && userCount > 0) {
-            return res.status(403).json({ message: 'An organization can have only one admin.' });
+            //   here find if user exist with the role admin or not
+            const existingAdmin = await User.findOne({ where: { organisationId, role: 'Admin' } });
+            if(existingAdmin){
+                return res.status(403).json({ message: 'An organization can have only one admin.' });
+            }
         }
 
         // Hash the password
