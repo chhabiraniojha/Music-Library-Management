@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const authenticate = require('../middlewares/auth.middleware');
-const authorize = require('../middlewares/validate.middleware')
 const userController = require('../controllers/userController');
 
 // Route to fetch all users (Admin only)

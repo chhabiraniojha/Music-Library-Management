@@ -1,6 +1,6 @@
 const User =require('../models/User')
 
-const authorize =async(req, res, next) => {
+const authorize =(role)=>async(req, res, next) => {
     // console.log("hi")
     if (!req.user) {
       return res.status(403).json({ message: 'User is not authenticated' });

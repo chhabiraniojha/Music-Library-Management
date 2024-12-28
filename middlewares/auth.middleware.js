@@ -11,18 +11,18 @@ const authenticate =async (req, res, next) => {
   }
 
   const token = authHeader;
-//   console.log(token)
+  console.log(token)
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify the token
     // console.log(decoded)
     const user = await User.findByPk(decoded.id)
-    // console.log(user.dataValues)
+    console.log(user.dataValues)
     if(!user){
       return res.status(404).json({ message: "User not found." });
     }
-    req.user = user.dataValues; // Attach decoded token payload to request object
+    req.user = user.dataValues; 
     // console.log(req.user)
-    next(); // Proceed to the next middleware/controller
+    next(); 
   } catch (error) {
     return res.status(401).json({ message: 'Invalid or expired token' });
   }
