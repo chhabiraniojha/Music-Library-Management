@@ -12,9 +12,8 @@ router.get('/:id', authenticate, trackController.getTrackbyId);
 //add artist
 router.post('/add-track',authenticate,trackController.addTrack)
 
-// update artist like name,hidden field
-
-// router.put('/:id',authenticate, artistController.updateArtist)
+// update track
+router.put('/:id',authenticate, trackController.updateTrack)
 
 //delete track by their organisations admin and editor only
 router.delete('/:id',authenticate,trackController.deleteTrack)

@@ -8,6 +8,10 @@ const Favorite = sequelize.define('Favorite', {
     defaultValue: DataTypes.UUIDV4,
     allowNull: false,
   },
+  name: {
+    type:DataTypes.STRING,
+    allowNull:false
+  },
   userId: {
     type: DataTypes.UUID,
     allowNull: false,
@@ -15,6 +19,11 @@ const Favorite = sequelize.define('Favorite', {
       model: 'Users',
       key: 'id',
     },
+  },
+  category: {
+    type: DataTypes.ENUM('Album', 'Artist', 'Track'),
+    allowNull:false
+
   },
   itemId: {
     type: DataTypes.UUID,

@@ -92,29 +92,118 @@ exports.addTrack = async (req, res) => {
 }
 
 // update track by id
+exports.updateTrack = async (req, res) => {
+    const { id } = req.params;
+    const { name, artistId, albumId, duration } = req.body; // Fields to update
+    const user = req.user;
+
+    //validate input fields
+    if (!name && !artistId && !albumId && !duration) {
+        return res.status(400).json({ message: 'atleast give one value for updation field should be name,artistId, albumId, duration' });
+    }
+
+    //validate user role 
+    if (user.role != "Admin" && user.role != "Editor") {
+        return res.status(403).json({ message: "you are not authorised to update track" })
+    }
+
+    try {
+        // Fetch track by ID
+        const track = await Track.findByPk(id);
+        if (!track) {
+            return res.status(404).json({ message: 'Track not found.' });
+        }
+        if (artistId && !albumId) {
+            const artist = await Artist.findOne({
+                where: {
+                    id: artistId,
+                    organisationId: user.organisationId
+                }
+            })
+            if (!artist) {
+                return res.status(404).json({ message: "artist not found or artist is not from your organisation" })
+            }
+        }
+        if (!artistId && albumId) {
+            const album = await Album.findOne({
+                where: {
+                    id: albumId,
+                }
+            })
+            if (!album) {
+                return res.status(404).json({ message: "album not found" })
+            }
+
+
+            const artist = Artist.findOne({
+                where: {
+                    artist: album.artistId,
+                    organisationId: user.organisationId
+                }
+            })
+            if (!artist) {
+                res.status(404).json({ message: "album is not from your organisation" })
+            }
+
+        }
+        
+
+        if (albumId && artistId) {
+            const album = await Album.findByPk(albumId);
+            if(!album){
+                return res.status(404).json({ message: "album not found" })
+            }
+            const artist =await Artist.findOne({
+                id:album.artistId,
+            })
+
+            if (!artist){
+                return res.status(404).json({ message: "artist for this album not found" })
+            }
+            
+            if(artist.organisationId!==user.organisationId){
+                return res.status(403).json({ message: "artist and album is not from your organisation" })
+            }
+
+        }
+
+        if (name) track.name=name;
+        if (duration) track.duration =duration;
+        if (artistId) track.artistId=artistId;
+        if (albumId) track.albumId=albumId;
+
+        await track.save();
+        return res.status(204).send(); 
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ message: 'Failed to update track.', error: error.message });
+    }
+
+};
+
 
 
 
 //delete track by id
-exports.deleteTrack = async (req,res)=>{
-    const { id }=req.params;
-    const user =req.user;
+exports.deleteTrack = async (req, res) => {
+    const { id } = req.params;
+    const user = req.user;
 
-    if(user.role != "Admin" && user.role != "Editor"){
-        res.status(403).json({message:"you are not authorised"})
+    if (user.role != "Admin" && user.role != "Editor") {
+        res.status(403).json({ message: "you are not authorised" })
     }
-    
+
     try {
-        const track=await Track.findByPk(id);
-        if(!track){
-            return res.status(404).json({message:"track not found"})
+        const track = await Track.findByPk(id);
+        if (!track) {
+            return res.status(404).json({ message: "track not found" })
         }
 
         // fething the artist to compare the track organisation and user organisation
 
-        const artist=await Artist.findByPk(track.artistId)
-        
-        if(artist.organisationId !== user.organisationId){
+        const artist = await Artist.findByPk(track.artistId)
+
+        if (artist.organisationId !== user.organisationId) {
             return res.status(403).json({ message: 'You are not authorized to delete this track outside your organisation.' });
         }
         await track.destroy();

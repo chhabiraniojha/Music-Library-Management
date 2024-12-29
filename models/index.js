@@ -68,37 +68,6 @@ Favorite.belongsTo(User,{
 })
 
 
-Artist.hasMany(Favorite,{
-    foreignKey: 'artistId',
-    onDelete: 'SET NULL',
-    onUpdate: 'CASCADE'
-})
-
-Favorite.belongsTo(Artist,{
-    foreignKey: 'artistId'
-})
-
-
-Album.hasMany(Favorite,{
-    foreignKey: 'albumId',
-    onDelete: 'SET NULL',
-    onUpdate: 'CASCADE'
-})
-
-Favorite.belongsTo(Album,{
-    foreignKey: 'albumId'
-})
-
-Track.hasMany(Favorite,{
-    foreignKey: 'trackId',
-    onDelete: 'SET NULL',
-    onUpdate: 'CASCADE'
-})
-
-Favorite.belongsTo(Track,{
-    foreignKey: 'trackId'
-})
-
 
 
 module.exports = { Organisation, User, Artist,Album,Track};
