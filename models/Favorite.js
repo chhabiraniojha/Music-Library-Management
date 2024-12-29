@@ -16,29 +16,9 @@ const Favorite = sequelize.define('Favorite', {
       key: 'id',
     },
   },
-  albumId: {
+  itemId: {
     type: DataTypes.UUID,
-    allowNull: true,
-    references: {
-      model: 'Albums',
-      key: 'id',
-    },
-  },
-  trackId: {
-    type: DataTypes.UUID,
-    allowNull: true,
-    references: {
-      model: 'Tracks',
-      key: 'id',
-    },
-  },
-  artistId: {
-    type: DataTypes.UUID,
-    allowNull: true,
-    references: {
-      model: 'Artists',
-      key: 'id',
-    },
+    allowNull: false
   },
   createdAt: {
     type: DataTypes.DATE,
@@ -50,8 +30,6 @@ const Favorite = sequelize.define('Favorite', {
     defaultValue: DataTypes.NOW,
     allowNull: false,
   },
-}, {
-  timestamps: true,
 });
 
 module.exports = Favorite;

@@ -26,7 +26,7 @@ const Track = sequelize.define('Track', {
   },
   albumId: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'Albums',
       key: 'id',
