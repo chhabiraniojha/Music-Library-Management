@@ -24,7 +24,7 @@ exports.getFavoritesByCategory = async (req, res) => {
         return res.status(200).json({message:"favorites fetched successfully", favorites });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: "Failed to retrieve favorites.", error: error.message });
+        return res.status(500).json({ message: "Failed to retrieve favorites.", error: error.message });
     }
 };
 
@@ -82,7 +82,7 @@ exports.addFavorite = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: "Failed to add favorite.", error: error.message });
+        return res.status(500).json({ message: "Failed to add favorite.", error: error.message });
     }
 };
 
@@ -109,6 +109,6 @@ exports.removeFavorite = async (req, res) => {
         return res.status(200).json({ message: "Favorite removed successfully." });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: "Failed to remove favorite.", error: error.message });
+        return res.status(500).json({ message: "Failed to remove favorite.", error: error.message });
     }
 };

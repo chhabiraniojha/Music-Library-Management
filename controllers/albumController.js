@@ -7,11 +7,11 @@ exports.getAlbums = async (req, res, next) => {
         return res.status(200).json({ message: 'Albums fetched successfully.', albums });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to fetch albums.', error: error.message });
+        return res.status(500).json({ message: 'Failed to fetch albums.', error: error.message });
     }
 }
 
-exports.getAlbumById = async (req, res, next) => {
+exports.getAlbumById = async (req, res) => {
     const albumId = req.params.id;
 
     try {
@@ -22,9 +22,8 @@ exports.getAlbumById = async (req, res, next) => {
         return res.status(200).json({ message: 'Album fetched successfully.', album });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to fetch album details.', error: error.message });
+        return res.status(500).json({ message: 'Failed to fetch album details.', error: error.message });
     }
-    res.json("success")
 }
 
 
@@ -61,7 +60,7 @@ exports.addAlbum = async (req, res) => {
         return res.status(201).json({ message: 'Album added successfully.', album: newAlbum });
     } catch (error) {
         console.log(error);
-        return res.status(400).json({ message: 'Failed to add album.', error: error.message });
+        return res.status(500).json({ message: 'Failed to add album.', error: error.message });
     }
 };
 
@@ -122,7 +121,7 @@ exports.updateAlbum = async (req, res) => {
         return res.status(204).send();
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to update the album.', error: error.message });
+        return res.status(500).json({ message: 'Failed to update the album.', error: error.message });
     }
 };
 
@@ -166,6 +165,6 @@ exports.deleteAlbum = async (req, res) => {
         return res.status(200).json({ message: 'Album deleted successfully.' });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to delete the album.', error: error.message });
+        return res.status(500).json({ message: 'Failed to delete the album.', error: error.message });
     }
 };

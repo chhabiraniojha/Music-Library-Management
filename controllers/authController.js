@@ -8,7 +8,7 @@ exports.signup = async (req, res) => {
     const { name, email, password, organisationId, role } = req.body;
 
     if (!name || !email || !password || !organisationId || !role) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(400).json({ data:null,message: "bad request! All fields are required",error:null });
     }
 
     if (password.length < 6) {
@@ -28,7 +28,7 @@ exports.signup = async (req, res) => {
 
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
-            return res.status(409).json({ message: 'Email already registered.' });
+            return res.status(409).json({data:null, message: 'Email already registered.',error:null });
         }
 
         const userCount = await User.count({ where: { organisationId } });
@@ -63,7 +63,7 @@ exports.signup = async (req, res) => {
             { expiresIn: '1d' }
         );
 
-        return res.status(201).json({ message: 'User registered successfully.', user, token });
+        return res.status(201).json({ message: "User created successfully.", user, token,error:null });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Signup failed. Please try again later.' });
@@ -119,9 +119,8 @@ exports.signup = async (req, res) => {
     // Logout Controller
     exports.logout = (req, res) => {
         try {
-            // Frontend should handle token removal from client storage
-            return res.status(200).json({ message: 'Logout successful.' });
+            return res.status(200).json({ data:null,message: 'Logout successful.',error:null });
         } catch (error) {
-            return res.status(400).json({ message: 'Logout failed.', error: error.message });
+            return res.status(500).json({ data:null,message: 'bad request,Logout failed.', error: error.message });
         }
     };

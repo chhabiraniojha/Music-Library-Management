@@ -11,7 +11,7 @@ exports.getTracks = async (req, res) => {
         return res.status(200).json({ message: "all tracks are fetched successfully", tracks })
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to fetch albums.', error: error.message });
+        return res.status(500).json({ message: 'Failed to fetch albums.', error: error.message });
     }
 }
 
@@ -25,7 +25,7 @@ exports.getTrackbyId = async (req, res) => {
         return res.status(200).json({ message: "track fetched successfully", track })
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to fetch albums.', error: error.message });
+        return res.status(500).json({ message: 'Failed to fetch albums.', error: error.message });
     }
 }
 
@@ -40,7 +40,7 @@ exports.addTrack = async (req, res) => {
 
     // role should be admin or editor
     if (user.role !== 'Admin' && user.role !== 'Editor') {
-        return res.status(401).json({ message: 'You are not authorized to add artists.' });
+        return res.status(403).json({ message: 'You are not authorized to add artists.' });
     }
 
 
@@ -85,7 +85,7 @@ exports.addTrack = async (req, res) => {
         });
 
     } catch (error) {
-        return res.status(400).json({ message: "tract addition failed", error: error.message })
+        return res.status(500).json({ message: "tract addition failed", error: error.message })
     }
 
 
@@ -176,7 +176,7 @@ exports.updateTrack = async (req, res) => {
         return res.status(204).send(); 
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to update track.', error: error.message });
+        return res.status(500).json({ message: 'Failed to update track.', error: error.message });
     }
 
 };
@@ -211,7 +211,7 @@ exports.deleteTrack = async (req, res) => {
         return res.status(200).json({ message: 'Track deleted successfully.' });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to delete track.', error: error.message });
+        return res.status(500).json({ message: 'Failed to delete track.', error: error.message });
     }
 
 }

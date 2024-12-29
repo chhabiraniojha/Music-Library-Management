@@ -10,7 +10,7 @@ exports.getArtists = async (req, res) => {
         return res.status(200).json({ message: "Artists retrieved successfully.", data: artists });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: "Failed to fetch artists.", error: error.message });
+        return res.status(500).json({ message: "Failed to fetch artists.", error: error.message });
     }
 };
 
@@ -33,7 +33,7 @@ exports.getArtistById = async (req, res) => {
         return res.status(200).json({ message: 'Artist retrieved successfully.', data: artist });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to fetch artist.', error: error.message });
+        return res.status(500).json({ message: 'Failed to fetch artist.', error: error.message });
     }
 };
 
@@ -48,7 +48,7 @@ exports.addArtist = async (req, res) => {
 
     // role should be admin or editor
     if (user.role !== 'Admin' && user.role !== 'Editor') {
-        return res.status(401).json({ message: 'You are not authorized to add artists.' });
+        return res.status(403).json({ message: 'You are not authorized to add artists.' });
     }
 
     // Validate the required fields
@@ -75,7 +75,7 @@ exports.addArtist = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to add artist.' });
+        return res.status(500).json({ message: 'Failed to add artist.' });
     }
 };
 
@@ -83,9 +83,9 @@ exports.addArtist = async (req, res) => {
 // update artist details like name and hidden field
 
 exports.updateArtist = async (req, res) => {
-    const { id } = req.params; 
-    const { name, hidden } = req.body; 
-    const user = req.user; 
+    const { id } = req.params;
+    const { name, hidden } = req.body;
+    const user = req.user;
 
     // Ensure at least one of name or hidden is provided
     if (!name && hidden == '') {
@@ -126,7 +126,7 @@ exports.updateArtist = async (req, res) => {
         return res.status(204).send();
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: "Failed to update artist.", error: error.message });
+        return res.status(500).json({ message: "Failed to update artist.", error: error.message });
     }
 };
 
@@ -134,9 +134,12 @@ exports.updateArtist = async (req, res) => {
 
 // delete artist by their organisations admin and editors only
 exports.deleteArtist = async (req, res) => {
-    const { id } = req.params; 
-    const user = req.user; 
-
+    const { id } = req.params;
+    const user = req.user;
+    // Only Admin or Editor can delete an artist
+    if (user.role !== 'Admin' && user.role !== 'Editor') {
+        return res.status(403).json({ message: "You are not authorized to delete artists." });
+    }
     try {
         // Fetch the artist by ID
         const artist = await Artist.findOne({ where: { id } });
@@ -150,10 +153,7 @@ exports.deleteArtist = async (req, res) => {
             return res.status(403).json({ message: "You can only delete artists from your organisation." });
         }
 
-        // Only Admin or Editor can delete an artist
-        if (user.role !== 'Admin' && user.role !== 'Editor') {
-            return res.status(403).json({ message: "You are not authorized to delete artists." });
-        }
+
 
         // Delete the artist
         await artist.destroy();
@@ -161,6 +161,6 @@ exports.deleteArtist = async (req, res) => {
         return res.status(200).json({ message: "Artist deleted successfully." });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: "Failed to delete artist.", error: error.message });
+        return res.status(500).json({ message: "Failed to delete artist.", error: error.message });
     }
 };

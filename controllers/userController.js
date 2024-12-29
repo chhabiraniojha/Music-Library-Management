@@ -10,7 +10,7 @@ exports.getAllUsers = async (req, res) => {
         return res.status(200).json(users);
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to retrieve users.' });
+        return res.status(500).json({ message: 'Failed to retrieve users.' });
     }
 };
 
@@ -30,6 +30,7 @@ exports.addUser = async (req, res) => {
             return res.status(403).json({ message: "Forbidden. Only Admins can add users." });
         }
 
+
         // Try registering the user by calling the signup API
         try {
             const registeringUser = await axios.post(`${process.env.BASE_URL}/api/auth/signup`, {
@@ -40,7 +41,7 @@ exports.addUser = async (req, res) => {
                 organisationId,
             });
 
-            return res.status(201).json(registeringUser.data );
+            return res.status(201).json(registeringUser.data);
         } catch (axiosError) {
             // Handle errors from the signup API call
             if (axiosError.response) {
@@ -66,7 +67,7 @@ exports.addUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
     const { id } = req.params;
     // console.log(id)
-    const user = req.user; 
+    const user = req.user;
 
     if (!id) {
         return res.status(400).json({ message: 'User ID is required.' });
@@ -74,15 +75,15 @@ exports.deleteUser = async (req, res) => {
 
     try {
 
-        // checking user is admin or not
-        if (user.role !== 'Admin') {
-            return res.status(403).json({ message: 'Forbidden. Only Admins can delete users.' });
-        } 
-        
+        // checking user is admin or editor or not
+        if (user.role !== 'Admin' && user.role !== "Edior") {
+            return res.status(403).json({ message: 'Forbidden. Only Admins or can delete users.' });
+        }
+
         // checking if user delete his own id
         if (user.id == id) {
-            return res.status(403).json({ message: 'You can not delete you on your own' });
-        } 
+            return res.status(403).json({ message: 'You can not delete you  your own account' });
+        }
 
         // Check if the user exists
         const userToDelete = await User.findByPk(id);
@@ -102,18 +103,22 @@ exports.deleteUser = async (req, res) => {
 
 // Update user password
 exports.updatePassword = async (req, res) => {
-    const userId = req.user.id; 
+    const user = req.user;
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
         return res.status(400).json({ message: 'Both current and new passwords are required.' });
     }
 
+    // checking user is admin or editor or not
+    if (user.role !== 'Admin' && user.role !== "Edior") {
+        return res.status(403).json({ message: 'Forbidden. Only Admins or can delete users.' });
+    }
     try {
-       const user = await User.findByPk(userId);
-       const isMatch = await bcrypt.compare(currentPassword, user.password);
+        const user = await User.findByPk(user.id);
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
-            return res.status(403).json({ message: 'Current password is incorrect.' });
+            return res.status(401).json({ message: 'Current password is incorrect.' });
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -123,6 +128,6 @@ exports.updatePassword = async (req, res) => {
         return res.status(204).send();
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ message: 'Failed to update password.', error: error.message });
+        return res.status(500).json({ message: 'Failed to update password.', error: error.message });
     }
 };
