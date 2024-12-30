@@ -6,8 +6,40 @@ const Track = require("../models/Track")
 
 // get all tracks
 exports.getTracks = async (req, res) => {
+    const { limit, offset,artistId,albumId, hidden } = req.query;
+    
+    if ((limit && isNaN(limit)) || (offset && isNaN(offset))) {
+        return res.status(400).json({ message: 'Invalid limit or offset. They must be numeric values.' });
+    }
+
+    const parsedLimit = parseInt(limit) > 0 ? parseInt(limit):5; 
+    const parsedOffset = parseInt(offset) >=0 ? parseInt(offset) :0;
+
+
     try {
-        const tracks = await Track.findAll();
+        if (hidden && typeof hidden!="boolean") {
+            return res.status(400).json({ message: "hidden must be true or false" });
+        }
+
+        const whereClause = {};
+        if (hidden) {
+            whereClause.hidden = hidden;
+        }
+
+        if (artistId) {
+            whereClause.artistId = artistId;
+        }
+
+        if (albumId) {
+            whereClause.albumId = albumId;
+        }
+
+        const tracks = await Track.findAll({
+            where: whereClause, 
+            limit: parsedLimit, 
+            offset: parsedOffset
+
+        });
         return res.status(200).json({ message: "all tracks are fetched successfully", tracks })
     } catch (error) {
         console.error(error);

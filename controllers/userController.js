@@ -5,9 +5,36 @@ const axios = require("axios")
 
 // Get all users
 exports.getAllUsers = async (req, res) => {
+    const { limit, offset, role } = req.query;
+
+    
+    if ((limit && isNaN(limit)) || (offset && isNaN(offset))) {
+        return res.status(400).json({ message: 'Invalid limit or offset. They must be numeric values.' });
+    }
+
+    const parsedLimit = parseInt(limit) > 0 ? parseInt(limit):5; 
+    const parsedOffset = parseInt(offset) >=0 ? parseInt(offset) :0;
+
+
     try {
-        const users = await User.findAll({ attributes: { exclude: ['password'] } });
-        return res.status(200).json(users);
+        if (role && role !== 'Editor' && role !== 'Viewer') {
+            return res.status(400).json({ message: "Invalid role. Role must be 'Editor' or 'Viewer'." });
+        }
+
+
+        const whereClause = {};
+        if (role) {
+            whereClause.role = role;
+        }
+
+
+        const users = await User.findAll({
+            attributes: { exclude: ['password'] },
+            where: whereClause, 
+            limit: parsedLimit, 
+            offset: parsedOffset,
+        });
+        return res.status(200).json({ message: "users fetched successfully", data: users });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Failed to retrieve users.' });

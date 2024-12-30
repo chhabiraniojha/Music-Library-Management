@@ -2,8 +2,35 @@ const Album = require("../models/Album");
 const Artist = require("../models/Artist")
 
 exports.getAlbums = async (req, res, next) => {
+    const { limit, offset,artistId, hidden } = req.query;
+
+    if ((limit && isNaN(limit)) || (offset && isNaN(offset))) {
+        return res.status(400).json({ message: 'Invalid limit or offset. They must be numeric values.' });
+    }
+
+    const parsedLimit = parseInt(limit) > 0 ? parseInt(limit):5; 
+    const parsedOffset = parseInt(offset) >=0 ? parseInt(offset) :0;
+
     try {
-        const albums = await Album.findAll();
+
+        if (hidden && typeof hidden!="boolean") {
+            return res.status(400).json({ message: "hidden must be true or false" });
+        }
+
+
+        const whereClause = {};
+        if (hidden) {
+            whereClause.hidden = hidden;
+        }
+        if(artistId){
+            whereClause.artistId=artistId
+        }
+
+        const albums = await Album.findAll({
+            where: whereClause, 
+            limit: parsedLimit, 
+            offset: parsedOffset,
+        });
         return res.status(200).json({ message: 'Albums fetched successfully.', albums });
     } catch (error) {
         console.error(error);

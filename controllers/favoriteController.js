@@ -6,8 +6,17 @@ const Favorite = require("../models/Favorite")
 
 //get favorite by category belongs to the user
 exports.getFavoritesByCategory = async (req, res) => {
+    const { limit, offset } = req.query;
     const { category } = req.params;
     const user = req.user;
+
+
+    if ((limit && isNaN(limit)) || (offset && isNaN(offset))) {
+        return res.status(400).json({ message: 'Invalid limit or offset. They must be numeric values.' });
+    }
+
+    const parsedLimit = parseInt(limit) > 0 ? parseInt(limit) : 5;
+    const parsedOffset = parseInt(offset) >= 0 ? parseInt(offset) : 0;
 
     //category validation
     if (category != "Album" && category != "Artist" && category != "Track") {
@@ -19,9 +28,11 @@ exports.getFavoritesByCategory = async (req, res) => {
             where: {
                 userId: user.id,
                 category,
+                limit: parsedLimit,
+                offset: parsedOffset
             }
         });
-        return res.status(200).json({message:"favorites fetched successfully", favorites });
+        return res.status(200).json({ message: "favorites fetched successfully", favorites });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Failed to retrieve favorites.", error: error.message });

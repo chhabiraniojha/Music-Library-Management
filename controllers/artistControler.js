@@ -4,9 +4,28 @@ const Artist = require('../models/Artist')
 
 //get  all artists
 exports.getArtists = async (req, res) => {
+    const { limit, offset, hidden } = req.query;
+    
+    if ((limit && isNaN(limit)) || (offset && isNaN(offset))) {
+        return res.status(400).json({ message: 'Invalid limit or offset. They must be numeric values.' });
+    }
+
+    const parsedLimit = parseInt(limit) > 0 ? parseInt(limit):5; 
+    const parsedOffset = parseInt(offset) >=0 ? parseInt(offset) :0;
     try {
-        // Fetch all artists from the database
-        const artists = await Artist.findAll();
+        if (hidden && typeof hidden!="boolean") {
+            return res.status(400).json({ message: "hidden must be true or false" });
+        }
+        const whereClause = {};
+        if (hidden) {
+            whereClause.hidden = hidden;
+        }
+
+        const artists = await Artist.findAll({
+            where: whereClause, 
+            limit: parsedLimit, 
+            offset: parsedOffset,
+        });
         return res.status(200).json({ message: "Artists retrieved successfully.", data: artists });
     } catch (error) {
         console.error(error);
