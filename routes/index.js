@@ -1,4 +1,5 @@
 const express = require('express');
+const organisationRoutes=require("./organisationRoutes")
 const authRoutes = require('./authRoutes');
 const userRoutes = require('./userRoutes');
 const artistRoutes = require('./artistRoutes');
@@ -8,6 +9,7 @@ const favoriteRoutes = require('./favoriteRoutes');
 
 const router = express.Router();
 
+router.use('/organisations',organisationRoutes)
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/artists', artistRoutes);
