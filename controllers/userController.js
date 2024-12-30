@@ -1,6 +1,5 @@
 const { User } = require('../models');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const axios = require("axios")
 
 // Get all users
